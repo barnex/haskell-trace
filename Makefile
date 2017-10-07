@@ -1,2 +1,2 @@
 all:
-	ghc *.hs
+	ghc app/*.hs src/*.hs
