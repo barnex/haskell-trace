@@ -28,9 +28,6 @@ intersect s ray =
  	let Sphere c r = s in
 	let Ray start dir = ray in
 	let v = sub start c in
-    let discr = sqr (dot v dir) - len2 v + sqr r in
+    let discr = (dot v dir ^^ 2) - len2 v +  r ^^ 2 in
 	if discr < 0 then Nothing else Just $ (-(dot v dir)) - sqrt discr
 
-
-sqr::Double->Double
-sqr x = x * x
