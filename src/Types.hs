@@ -31,3 +31,4 @@ intersect s ray =
     let discr = (dot v dir ^^ 2) - len2 v +  r ^^ 2 in
 	if discr < 0 then Nothing else Just $ (-(dot v dir)) - sqrt discr
 
+
