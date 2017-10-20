@@ -10,14 +10,21 @@ data Env = Env {
     }
 
 render:: Env -> Int -> Int -> PixelRGBF
-render e i j = PixelRGBF x y 0.0
+render e i j =
+   	case t of
+        Nothing -> PixelRGBF 1.0 1.0 1.0 
+        Just _  -> PixelRGBF 1.0 0.0 0.0
     where
-    i'::Float = fromIntegral i
-    j'::Float = fromIntegral j
-    w'::Float = fromIntegral width
-    h'::Float = fromIntegral height
-    x =  2.0*i'/w' - 1.0
-    y = -2.0*j'/h' + 1.0
+      i'::Double = fromIntegral i
+      j'::Double = fromIntegral j
+      w'::Double = fromIntegral width
+      h'::Double = fromIntegral height
+      a = w'/h'
+      x =  a*(2.0*i'/w' - 1.0)
+      y = -2.0*j'/h' + 1.0
+      r = Ray (Vector x y 0.0) (Vector 0.0 0.0 (-1.0))
+      s = Sphere (Vector 0.0 0.0 (-1.0)) 0.5
+      t = intersect s r
 
 width :: Int
 width = 800

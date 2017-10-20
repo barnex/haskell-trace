@@ -15,6 +15,7 @@ sub::Vector -> Vector -> Vector
 sub (Vector ax ay az) (Vector bx by bz) = Vector (ax-bx) (ay-by) (az-bz)
 
 
+-- start dir
 data Ray = Ray Vector Vector deriving Show
 
 
