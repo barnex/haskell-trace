@@ -20,9 +20,12 @@ render e i j =
       w'::Double = fromIntegral width
       h'::Double = fromIntegral height
       a = w'/h'
-      x =  a*(2.0*i'/w' - 1.0)
-      y = -2.0*j'/h' + 1.0
-      r = Ray (Vector x y 0.0) (Vector 0.0 0.0 (-1.0))
+      x =  a*(2.0*(i'+0.5)/w' - 1.0)
+      y = -2.0*(j'+0.5)/h' + 1.0
+      start = (Vector x y 0.0)
+      f = Vector 0 0 2
+      dir = normalize $ sub start f
+      r = Ray start dir
       s = Sphere (Vector 0.0 0.0 (-1.0)) 0.5
       t = intersect s r
 

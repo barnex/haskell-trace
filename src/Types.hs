@@ -8,11 +8,19 @@ dot (Vector ax ay az) (Vector bx by bz) = ax*bx + ay*by + az*bz
 len2::Vector -> Double
 len2 v = dot v v
 
+len::Vector -> Double
+len v = sqrt $ len2 v
+
 sum::Vector -> Vector -> Vector
 sum (Vector ax ay az) (Vector bx by bz) = Vector (ax+bx) (ay+by) (az+bz)
 
 sub::Vector -> Vector -> Vector
 sub (Vector ax ay az) (Vector bx by bz) = Vector (ax-bx) (ay-by) (az-bz)
+
+normalize::Vector -> Vector
+normalize v@(Vector x y z) = Vector (x/l) (y/l) (z/l)
+  where
+    l = len v
 
 
 -- start dir
