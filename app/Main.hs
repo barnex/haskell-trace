@@ -1,3 +1,4 @@
+{-# LANGUAGE ScopedTypeVariables #-}
 module Main where
 
 import Types
@@ -9,7 +10,14 @@ data Env = Env {
     }
 
 render:: Env -> Int -> Int -> PixelRGBF
-render e x y = PixelRGBF 1.0 1.0 1.0
+render e i j = PixelRGBF x y 0.0
+    where
+    i'::Float = fromIntegral i
+    j'::Float = fromIntegral j
+    w'::Float = fromIntegral width
+    h'::Float = fromIntegral height
+    x =  2.0*i'/w' - 1.0
+    y = -2.0*j'/h' + 1.0
 
 width :: Int
 width = 800
