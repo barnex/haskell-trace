@@ -3,6 +3,7 @@ module Main where
 
 import Types
 import Codec.Picture
+import GHC.Float
 
 data Env = Env { 
            camPos :: Vector,
@@ -13,7 +14,11 @@ render:: Env -> Int -> Int -> PixelRGBF
 render e i j =
    	case t of
         Nothing -> PixelRGBF 1.0 1.0 1.0 
-        Just _  -> PixelRGBF 1.0 0.0 0.0
+        Just t ->
+          let p = at r t in
+          let (Vector _ _ z) = normalVector s p in
+          let z' = double2Float z in
+          PixelRGBF z' z' z'
     where
       i'::Double = fromIntegral i
       j'::Double = fromIntegral j
