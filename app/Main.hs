@@ -1,20 +1,25 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 module Main where
 
-import Types
+import Types as Types
 import Codec.Picture
 import GHC.Float
+import Data.List
+import Data.Maybe
+import qualified Safe as Safe
+import qualified Debug.Trace as Trace
 
 data Env = Env { 
            camPos :: Vector,
-           focalLen :: Double
+           focalLen :: Double,
+           scene :: [Sphere]
     }
 
 render:: Env -> Int -> Int -> PixelRGBF
-render e i j =
-   	case t of
+render env i j =
+   	case tsMaybe of
         Nothing -> PixelRGBF 1.0 1.0 1.0 
-        Just t ->
+        Just (t, s) ->
           let p = at r t in
           let (Vector _ _ z) = normalVector s p in
           let z' = double2Float $ srgb z in
@@ -31,8 +36,18 @@ render e i j =
       f = Vector 0 0 2
       dir = normalize $ sub start f
       r = Ray start dir
-      s = Sphere (Vector 0.0 0.0 (-1.0)) 0.5
-      t = intersect s r
+      ts = map (\s -> (Types.intersect s r, s)) $ scene env
+      sortedTs = sortOn fst ts
+      filteredAndSortedTs = filter (\(t,s) ->
+                             case t of
+                               Just x | x > 0 -> True
+                               _ -> False
+                            ) sortedTs
+      tsMaybe =  case filteredAndSortedTs of
+                 [] -> Nothing
+                 (x:xs) -> let (maybeT, s) = x in
+                           Just (fromJust maybeT, s)
+      
 
 width :: Int
 width = 800
@@ -42,11 +57,12 @@ height = 600
 
 main :: IO ()
 main =
-  let c = Vector 0.0 1.0 0.0 in
-  let r = 1 in
+  let c = Vector 0.0 0.0 (-1.0) in
+  let r = 0.5 in
   let s = Sphere c r in
+  let c' = Vector 1.0 0.0 (-2.0) in
+  let s' = Sphere c' r in
   let ray = Ray (Vector 1.0 2.0 0.0) (Vector 0.0 (-1.0) 0.0) in
-  let env = Env{ camPos = Vector 0.0 0.0 0.0, focalLen = 1 } in
+  let env = Env{ camPos = Vector 0.0 0.0 0.0, focalLen = 1, scene = [s, s'] } in
   do
-    print $ intersect s ray
     saveBmpImage "test.bmp" $ ImageRGBF $ generateImage (render env) width height
