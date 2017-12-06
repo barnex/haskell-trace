@@ -17,7 +17,7 @@ render e i j =
         Just t ->
           let p = at r t in
           let (Vector _ _ z) = normalVector s p in
-          let z' = double2Float z in
+          let z' = double2Float $ srgb z in
           PixelRGBF z' z' z'
     where
       i'::Double = fromIntegral i
