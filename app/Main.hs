@@ -6,6 +6,10 @@ import Codec.Picture
 import GHC.Float
 import Data.List
 import Data.Maybe
+import Vector
+import Ray
+import Shape
+import Sphere
 import qualified Debug.Trace as Trace
 
 findColour :: Env -> Ray -> Colour
