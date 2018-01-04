@@ -8,13 +8,27 @@ import Data.List
 import Data.Maybe
 import qualified Debug.Trace as Trace
 
-data Env = Env { 
-           scene :: [Sphere]
-    }
+findColour :: Env -> Ray -> Colour
+findColour env ray = 
+  let shapes = scene env
+      f shape = shape env ray
+      maybeDistancesAndColours = f <$> shapes
+      sortedTs = sortOn fst $ catMaybes maybeDistancesAndColours
+  in
+  case sortedTs of
+    [] -> backgroundColour env
+    (x:xs) -> snd x
 
 render:: Env -> Int -> Int -> PixelRGBF
-render env i j =
-    case tsMaybe of
+render env i j = 
+  let (x, y) = pixelToCoordinate i j width height
+      ray = rayFrom x y
+      f = double2Float . srgb
+      Colour r g b = findColour env ray
+  in
+  PixelRGBF (f r) (f g) (f b)
+  
+{-    case tsMaybe of
       Nothing -> PixelRGBF 1.0 1.0 1.0 
       Just (t, s) ->
         let p = at r t in
@@ -24,9 +38,10 @@ render env i j =
     where
       (x, y) = pixelToCoordinate i j width height
       r = rayFrom x y
-      tsMaybe = findIntersect r $ scene env
+      tsMaybe = findIntersect r $ scene env-}
+ 
 
-findIntersect :: Ray -> [Sphere] -> Maybe (Double, Sphere) 
+{-findIntersect :: Ray -> [Sphere] -> Maybe (Double, Sphere) 
 findIntersect r scene = 
   let ts = map (\s -> (Types.intersect s r, s)) scene
       sortedTs = sortOn fst ts
@@ -39,7 +54,7 @@ findIntersect r scene =
   case filteredAndSortedTs of
     [] -> Nothing
     (x:xs) -> let (maybeT, s) = x in
-              Just (fromJust maybeT, s)
+              Just (fromJust maybeT, s)-}
 
 rayFrom:: Double -> Double -> Ray
 rayFrom x y = 
@@ -71,10 +86,10 @@ main :: IO ()
 main =
   let c = Vector 0.0 0.0 (-1.0) in
   let r = 0.5 in
-  let s = Sphere c r in
+  let s = sphere c r in
   let c' = Vector 1.0 0.0 (-2.0) in
-  let s' = Sphere c' r in
+  let s' = sphere c' r in
   let ray = Ray (Vector 1.0 2.0 0.0) (Vector 0.0 (-1.0) 0.0) in
-  let env = Env{ scene = [s, s'] } in
+  let env = Env{ scene = [s, s'] , backgroundColour = Colour 0.0 0.0 0.0 } in
   do
     saveBmpImage "test.bmp" $ ImageRGBF $ generateImage (render env) width height

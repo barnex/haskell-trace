@@ -34,21 +34,29 @@ at:: Ray -> Double -> Vector
 at (Ray startVector direction) t =
   vectorSum startVector $ mul t direction
 
+data Env = Env { 
+           scene :: [Shape],
+           backgroundColour::Colour
+    }
+
 type Center = Vector
 type Radius = Double
-data Sphere = Sphere Center Radius deriving Show
+type Distance = Double
+data Colour = Colour Double Double Double
+type Shape = Env -> Ray -> Maybe (Distance, Colour)
 
-intersect::Sphere -> Ray -> Maybe Double
-intersect s ray =
+sphere::Center -> Radius -> Shape
+sphere center rad = undefined
+{-sphere s ray =
   let Sphere c r = s in
   let Ray start dir = ray in
   let v = sub start c in
   let discr = (dot v dir ^^ 2) - len2 v +  r ^^ 2 in
-  if discr < 0 then Nothing else Just $ (-(dot v dir)) - sqrt discr
+  if discr < 0 then Nothing else Just $ (-(dot v dir)) - sqrt discr-}
 
-normalVector :: Sphere -> Vector -> Vector
+{-normalVector :: Sphere -> Vector -> Vector
 normalVector (Sphere center _) point =
-  normalize $ sub point center
+  normalize $ sub point center-}
 
 srgb::Double -> Double
 srgb x =
