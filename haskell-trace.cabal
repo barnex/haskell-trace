@@ -26,7 +26,6 @@ executable haskell-trace-exe
   build-depends:       base
                      , haskell-trace
                      , JuicyPixels
-                     , safe
   default-language:    Haskell2010
 
 test-suite haskell-trace-test

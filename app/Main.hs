@@ -6,7 +6,6 @@ import Codec.Picture
 import GHC.Float
 import Data.List
 import Data.Maybe
-import qualified Safe as Safe
 import qualified Debug.Trace as Trace
 
 data Env = Env { 
