@@ -71,10 +71,10 @@ main :: IO ()
 main =
   let c = Vector 0.0 0.0 (-1.0) in
   let r = 0.5 in
-  let s = paint (sphere c r) $ white in
+  let o = paint (sphere c r) $ white in
   let c' = Vector 1.0 0.0 (-2.0) in
-  let s' = paint (sphere c' r) white in
+  let o' = paint (sphere c' r) white in
   let ray = Ray (Vector 1.0 2.0 0.0) (Vector 0.0 (-1.0) 0.0) in
-  let env = Env{ scene = [s, s'] , backgroundColour = Colour 0.0 0.0 0.0 } in
+  let env = Env{ scene = [o, o'] , backgroundColour = Colour 0.0 0.0 0.0 } in
   do
     saveBmpImage "test.bmp" $ ImageRGBF $ generateImage (render env) width height
