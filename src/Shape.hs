@@ -11,3 +11,5 @@ data Env = Env {
 type Distance = Double
 data Colour = Colour Double Double Double
 type Shape = Env -> Ray -> Maybe (Distance, Colour)
+
+
