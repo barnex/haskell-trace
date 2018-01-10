@@ -12,6 +12,18 @@ import Shape
 import Sphere
 import qualified Debug.Trace as Trace
 
+-- | render determines the color of a pixel.
+render:: Env -> Int -> Int -> PixelRGBF
+render env i j = 
+  let (x, y) = pixelToCoordinate i j width height
+      ray = rayFrom x y
+      f = double2Float . srgb
+      Colour r g b = findColour env ray
+  in
+  PixelRGBF (f r) (f g) (f b)
+  
+
+-- | findColour determines the color seen by a ray
 findColour :: Env -> Ray -> Colour
 findColour env ray = 
   let shapes = scene env
@@ -23,43 +35,9 @@ findColour env ray =
     [] -> backgroundColour env
     (x:xs) -> snd x
 
-render:: Env -> Int -> Int -> PixelRGBF
-render env i j = 
-  let (x, y) = pixelToCoordinate i j width height
-      ray = rayFrom x y
-      f = double2Float . srgb
-      Colour r g b = findColour env ray
-  in
-  PixelRGBF (f r) (f g) (f b)
-  
-{-    case tsMaybe of
-      Nothing -> PixelRGBF 1.0 1.0 1.0 
-      Just (t, s) ->
-        let p = at r t in
-        let (Vector _ _ z) = normalVector s p in
-        let z' = double2Float $ srgb z in
-        PixelRGBF z' z' z'
-    where
-      (x, y) = pixelToCoordinate i j width height
-      r = rayFrom x y
-      tsMaybe = findIntersect r $ scene env-}
- 
 
-{-findIntersect :: Ray -> [Sphere] -> Maybe (Double, Sphere) 
-findIntersect r scene = 
-  let ts = map (\s -> (Types.intersect s r, s)) scene
-      sortedTs = sortOn fst ts
-      filteredAndSortedTs = filter (\(t,s) ->
-                         case t of
-                           Just x | x > -1 -> True
-                           _ -> False
-                        ) sortedTs
-  in
-  case filteredAndSortedTs of
-    [] -> Nothing
-    (x:xs) -> let (maybeT, s) = x in
-              Just (fromJust maybeT, s)-}
-
+-- | rayFrom creates a ray starting from position (x, y) on the camera.
+-- TODO: the focal length (2) is still hard-coded.
 rayFrom:: Double -> Double -> Ray
 rayFrom x y = 
   let start = (Vector x y 0.0)
@@ -67,7 +45,9 @@ rayFrom x y =
       dir = normalize $ sub start f
   in
   Ray start dir
-      
+
+
+-- | pixelToCoordinate turns a pixel index into a physical coordinate on the camera.
 pixelToCoordinate:: Int -> Int -> Int -> Int -> (Double, Double)
 pixelToCoordinate i j width height  = 
   let i'::Double = fromIntegral i
@@ -85,6 +65,7 @@ width = 800
 
 height :: Int
 height = 600
+      
 
 main :: IO ()
 main =
