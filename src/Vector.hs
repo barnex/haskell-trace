@@ -1,6 +1,7 @@
 module Vector where
 
 data Vector = Vector Double Double Double deriving Show
+type UnitVector = Vector
 
 dot::Vector -> Vector -> Double
 dot (Vector ax ay az) (Vector bx by bz) = ax*bx + ay*by + az*bz

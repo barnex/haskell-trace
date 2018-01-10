@@ -1,15 +1,16 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 module Main where
 
-import Types as Types
 import Codec.Picture
-import GHC.Float
 import Data.List
 import Data.Maybe
-import Vector
+import GHC.Float
+import Material
+import Object
 import Ray
-import Shape
 import Sphere
+import Types as Types
+import Vector
 import qualified Debug.Trace as Trace
 
 -- | render determines the color of a pixel.
@@ -71,9 +72,9 @@ main :: IO ()
 main =
   let c = Vector 0.0 0.0 (-1.0) in
   let r = 0.5 in
-  let s = sphere c r in
+  let s = paint $ sphere c r $ white in
   let c' = Vector 1.0 0.0 (-2.0) in
-  let s' = sphere c' r in
+  let s' = paint $ sphere c' r $ white in
   let ray = Ray (Vector 1.0 2.0 0.0) (Vector 0.0 (-1.0) 0.0) in
   let env = Env{ scene = [s, s'] , backgroundColour = Colour 0.0 0.0 0.0 } in
   do

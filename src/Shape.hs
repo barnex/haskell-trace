@@ -1,15 +1,10 @@
 module Shape where
 
-import Vector
 import Ray
+import Vector
+import Types
+import Object
 
-data Env = Env { 
-           scene :: [Shape],
-           backgroundColour::Colour
-    }
-
-type Distance = Double
-data Colour = Colour Double Double Double
-type Shape = Env -> Ray -> Maybe (Distance, Colour)
+type Shape = Env -> Ray -> Maybe (Distance, UnitVector)
 
 
