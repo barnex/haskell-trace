@@ -9,6 +9,7 @@ import Material
 import Object
 import Ray
 import Sphere
+import Sheet
 import Types as Types
 import Vector
 import qualified Debug.Trace as Trace
@@ -74,7 +75,8 @@ main =
   let o = paint (sphere c r) $ diffuse $ Colour 1.0 0.0 0.0 in
   let c' = Vector 1.0 0.0 (-2.0) in
   let o' = paint (sphere c' r) $ diffuse $ Colour 0.0 1.0 0.0 in
+  let s = paint (sheet (-10.0) (Vector 0.0 0.0 1.0)) flatWhite in
   let ray = Ray (Vector 1.0 2.0 0.0) (Vector 0.0 (-1.0) 0.0) in
-  let env = Env{ scene = [o, o'] , backgroundColour = Colour 0.0 0.0 0.0 } in
+  let env = Env{ scene = [o, o', s] , backgroundColour = Colour 0.0 0.0 0.0 } in
   do
     saveBmpImage "test.bmp" $ ImageRGBF $ generateImage (render env) width height
