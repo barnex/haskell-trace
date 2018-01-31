@@ -71,7 +71,7 @@ height = 600
 main :: IO ()
 main =
   let c = Vector 0.0 0.0 (-1.0) in
-  let r = 0.5 in
+  let r = 1.0 in
   let o = paint (sphere c r) $ diffuse $ Colour 1.0 0.0 0.0 in
   let c' = Vector 1.0 0.0 (-2.0) in
   let o' = paint (sphere c' r) $ diffuse $ Colour 0.0 1.0 0.0 in

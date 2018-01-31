@@ -1,11 +1,13 @@
 
 module Material where
 
-import Vector
-import Ray
-import Types
-import Shape
+import Data.List
+import Data.Maybe
 import Object
+import Ray
+import Shape
+import Types
+import Vector
 
 light :: Vector
 light = Vector 1.0 1.0 0.0
@@ -29,10 +31,24 @@ diffuse colour = \env ray dist normal ->
   let pointOnShape = ray `at` dist in
   let vectorTowardsLight = light `sub` pointOnShape in
   let normalizedVectorTowardsLight = normalize vectorTowardsLight in
-  let fallOff = 1/len2 vectorTowardsLight in
-  let cosTheta = (normalizedVectorTowardsLight `dot` normal) * fallOff in
-  clamp cosTheta `scale` colour
+  let rayTowardsLight = Ray pointOnShape normalizedVectorTowardsLight in
+  if occludes env rayTowardsLight vectorTowardsLight then
+    Colour 0.0 0.0 0.0
+  else
+    let fallOff = 1/len2 vectorTowardsLight in
+    let cosTheta = (normalizedVectorTowardsLight `dot` normal) * fallOff in
+    clamp cosTheta `scale` colour
   
+occludes::Env -> Ray -> Vector -> Bool
+occludes env ray vectorTowardsLight =
+	let s = scene env in
+	let f = \o -> o env ray in
+    let maybeDistancesAndColours = fmap f s in
+    let sortedTs = sortOn fst $ catMaybes maybeDistancesAndColours in
+-- TODO(Kasper): factor out
+     case sortedTs of
+       [] -> False
+       ((t,_):xs) -> t > 0 && t < len vectorTowardsLight
 
 flatWhite::Material
 flatWhite = flat $ Colour 1.0 1.0 1.0
