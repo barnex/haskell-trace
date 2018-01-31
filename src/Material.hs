@@ -8,7 +8,7 @@ import Shape
 import Object
 
 light :: Vector
-light = Vector 0.0 0.0 0.0
+light = Vector 1.0 1.0 0.0
 
 type Material = Env -> Ray -> Distance -> UnitVector -> Colour
 

@@ -15,3 +15,15 @@ sheet distanceFromOrigin normalVector =
     else
       Nothing
     
+
+-- | sheety constructs :q
+sheety::Double -> Shape
+sheety height =
+  \env ray@(Ray start dir) ->
+    let (Vector sx sy sz) = start in
+    let (Vector dx dy dz) = dir in
+    let t = (height - sy) / dy in
+    if t > 0 then
+      Just (t, (Vector 0.0 1.0 0.0))
+    else
+      Nothing
