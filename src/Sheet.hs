@@ -12,16 +12,16 @@ sheet distanceFromOrigin normalVector =
     let dist = (distanceFromOrigin - rs) / rd in
     if dist > 0 then
       Just (dist, normalVector)
-    else
+		else
       Nothing
     
 
--- | sheety constructs :q
+-- | sheety constructs a horizontal sheet
 sheety::Double -> Shape
 sheety height =
   \env ray@(Ray start dir) ->
-    let (Vector sx sy sz) = start in
-    let (Vector dx dy dz) = dir in
+    let (Vector _ sy _) = start in
+    let (Vector _ dy _) = dir in
     let t = (height - sy) / dy in
     if t > 0 then
       Just (t, (Vector 0.0 1.0 0.0))
