@@ -12,10 +12,11 @@ import Vector
 light :: Vector
 light = Vector 1.0 1.0 0.0
 
-type Material = Env -> Ray -> Distance -> UnitVector -> Colour
+type RecDepth = Int
+type Material = Env -> Ray -> RecDepth -> Distance -> UnitVector -> Colour
 
 paint::Shape -> Material -> Object
-paint shape material = \env ray -> do 
+paint shape material = \env ray recDepth -> do 
   (dist, normal) <- shape env ray
   let colour = material env ray dist normal
   return (dist, colour)
@@ -27,7 +28,7 @@ clamp::Double -> Double
 clamp d = max d 0
 
 diffuse::Colour -> Material
-diffuse colour = \env ray dist normal ->
+diffuse colour = \env ray _ dist normal ->
   let pointOnShape = ray `at` dist in
   let vectorTowardsLight = light `sub` pointOnShape in
   let normalizedVectorTowardsLight = normalize vectorTowardsLight in
@@ -38,6 +39,17 @@ diffuse colour = \env ray dist normal ->
     let fallOff = 1/len2 vectorTowardsLight in
     let cosTheta = (normalizedVectorTowardsLight `dot` normal) * fallOff in
     clamp cosTheta `scale` colour
+
+
+-- TODO: Koen: reflectivity type
+reflective::Colour -> Material
+reflective reflectivity = \env ray@(Ray _ dir) dist normal ->
+  let pointOnShape = ray `at` dist in
+  let dir' = mul (-1.0) dir in -- direction pointing outward from surface
+  let reflectedDir = dir' `sub` (mul (2.0*(normal `dot` dir')) normal) in
+  let reflectedRay = Ray pointOnShape reflectedDir in
+  findColor env reflectedRay (depth - 1)
+  
   
 occludes::Env -> Ray -> Vector -> Bool
 occludes env ray vectorTowardsLight =
