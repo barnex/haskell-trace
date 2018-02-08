@@ -77,6 +77,6 @@ main =
   let o' = paint (sphere c' r) $ diffuse $ Colour 0.0 1.0 0.0 in
   let s = paint (sheety (-1.0)) $ diffuse $ Colour 1.0 1.0 1.0 in
   let ray = Ray (Vector 1.0 2.0 0.0) (Vector 0.0 (-1.0) 0.0) in
-  let env = Env{ scene = [o, o', s] , backgroundColour = Colour 0.1 0.1 0.1 } in
+  let env = Env{ scene = [o, o', s] , backgroundColour = Colour 0.1 0.1 0.1, light = Vector 1.0 1.0 0.0 } in
   do
     saveBmpImage "test.bmp" $ ImageRGBF $ generateImage (render env) width height

@@ -9,9 +9,6 @@ import Shape
 import Types
 import Vector
 
-light :: Vector
-light = Vector 1.0 1.0 0.0
-
 type Material = Env -> Ray -> Distance -> UnitVector -> Colour
 
 paint::Shape -> Material -> Object
@@ -29,7 +26,7 @@ clamp d = max d 0
 diffuse::Colour -> Material
 diffuse colour = \env ray dist normal ->
   let pointOnShape = ray `at` dist in
-  let vectorTowardsLight = light `sub` pointOnShape in
+  let vectorTowardsLight = (light env) `sub` pointOnShape in
   let normalizedVectorTowardsLight = normalize vectorTowardsLight in
   let rayTowardsLight = Ray pointOnShape normalizedVectorTowardsLight in
   if occludes env rayTowardsLight vectorTowardsLight then
@@ -41,8 +38,8 @@ diffuse colour = \env ray dist normal ->
   
 occludes::Env -> Ray -> Vector -> Bool
 occludes env ray vectorTowardsLight =
-	let s = scene env in
-	let f = \o -> o env ray in
+  let s = scene env in
+    let f = \o -> o env ray in
     let maybeDistancesAndColours = fmap f s in
     let sortedTs = sortOn fst $ catMaybes maybeDistancesAndColours in
 -- TODO(Kasper): factor out

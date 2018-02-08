@@ -12,7 +12,7 @@ sheet distanceFromOrigin normalVector =
     let dist = (distanceFromOrigin - rs) / rd in
     if dist > 0 then
       Just (dist, normalVector)
-		else
+    else
       Nothing
     
 

@@ -8,6 +8,7 @@ type Object = Env -> Ray -> Maybe (Distance, Colour)
 
 data Env = Env { 
            scene :: [Object],
-           backgroundColour::Colour
+           backgroundColour::Colour,
+           light :: Vector
     }
 

@@ -24,12 +24,13 @@ library
                      , Vector
                      , Sheet
   build-depends:       base >= 4.7 && < 5
+  ghc-options:         -Werror
   default-language:    Haskell2010
 
 executable haskell-trace-exe
   hs-source-dirs:      app
   main-is:             Main.hs
-  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  ghc-options:         -Werror -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base
                      , haskell-trace
                      , JuicyPixels
@@ -43,7 +44,7 @@ test-suite haskell-trace-test
   build-depends:       base
                      , hspec
                      , haskell-trace
-  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  ghc-options:         -Werror -threaded -rtsopts -with-rtsopts=-N
   default-language:    Haskell2010
 
 source-repository head
