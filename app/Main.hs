@@ -14,28 +14,18 @@ import Types as Types
 import Vector
 import qualified Debug.Trace as Trace
 
+
+
 -- | render determines the color of a pixel.
 render:: Env -> Int -> Int -> PixelRGBF
 render env i j = 
   let (x, y) = pixelToCoordinate i j width height
       ray = rayFrom x y
       f = double2Float . srgb
-      Colour r g b = findColour env ray
+      Colour r g b = findColour env ray 10 -- 10 = recursion depth. TODO
   in
   PixelRGBF (f r) (f g) (f b)
   
-
--- | findColour determines the color seen by a ray
-findColour :: Env -> Ray -> Colour
-findColour env ray = 
-  let shapes = scene env
-      f shape = shape env ray
-      maybeDistancesAndColours = f <$> shapes
-      sortedTs = sortOn fst $ catMaybes maybeDistancesAndColours
-  in
-  case sortedTs of
-    [] -> backgroundColour env
-    (x:xs) -> snd x
 
 
 -- | rayFrom creates a ray starting from position (x, y) on the camera.
@@ -72,10 +62,11 @@ main :: IO ()
 main =
   let c = Vector 0.0 0.0 (-1.0) in
   let r = 1.0 in
-  let o = paint (sphere c r) $ diffuse $ Colour 1.0 0.0 0.0 in
+  let recDepth = 1 in
+  let o = paint (sphere c r) (diffuse $ Colour 1.0 0.0 0.0) recDepth in
   let c' = Vector 1.0 0.0 (-2.0) in
-  let o' = paint (sphere c' r) $ diffuse $ Colour 0.0 1.0 0.0 in
-  let s = paint (sheety (-1.0)) $ diffuse $ Colour 1.0 1.0 1.0 in
+  let o' = paint (sphere c' r) (reflective $ Colour 1.0 1.0 1.0) recDepth in
+  let s = paint (sheety (-1.0)) (diffuse $ Colour 1.0 1.0 1.0) recDepth in
   let ray = Ray (Vector 1.0 2.0 0.0) (Vector 0.0 (-1.0) 0.0) in
   let env = Env{ scene = [o, o', s] , backgroundColour = Colour 0.1 0.1 0.1, light = Vector 1.0 1.0 0.0 } in
   do
