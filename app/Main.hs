@@ -62,11 +62,10 @@ main :: IO ()
 main =
   let c = Vector 0.0 0.0 (-1.0) in
   let r = 1.0 in
-  let recDepth = 1 in
-  let o = paint (sphere c r) (diffuse $ Colour 1.0 0.0 0.0) recDepth in
+  let o = paint (sphere c r) (diffuse $ Colour 1.0 0.0 0.0) in
   let c' = Vector 1.0 0.0 (-2.0) in
-  let o' = paint (sphere c' r) (reflective $ Colour 1.0 1.0 1.0) recDepth in
-  let s = paint (sheety (-1.0)) (diffuse $ Colour 1.0 1.0 1.0) recDepth in
+  let o' = paint (sphere c' r) (reflective $ Colour 1.0 1.0 1.0) in
+  let s = paint (sheety (-1.0)) (diffuse $ Colour 1.0 1.0 1.0) in
   let ray = Ray (Vector 1.0 2.0 0.0) (Vector 0.0 (-1.0) 0.0) in
   let env = Env{ scene = [o, o', s] , backgroundColour = Colour 0.1 0.1 0.1, light = Vector 1.0 1.0 0.0 } in
   do

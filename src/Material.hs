@@ -8,17 +8,16 @@ import Shape
 import Types
 import Vector
 
-type RecDepth = Int
 type Material = Env -> Ray -> RecDepth -> Distance -> UnitVector -> Colour
 
-paint::Shape -> Material -> RecDepth -> Object
-paint shape material recDepth = \env ray -> do 
+paint::Shape -> Material -> Object
+paint shape material = \env ray recDepth -> do 
   (dist, normal) <- shape env ray
   let colour = material env ray recDepth dist normal
   return (dist, colour)
 
-flat::Colour -> RecDepth -> Material
-flat colour recDepth = \env ray recDepth dist norm -> colour
+flat::Colour -> Material
+flat colour = \env ray recDepth dist norm -> colour
 
 clamp::Double -> Double
 clamp d = max d 0
@@ -50,7 +49,7 @@ reflective reflectivity = \env ray@(Ray _ dir) recDepth dist normal ->
 occludes::Env -> Ray -> Vector -> Bool
 occludes env ray vectorTowardsLight =
   let s = scene env in
-    let f = \o -> o env ray in
+    let f = \o -> o env ray (-1) in
     let maybeDistancesAndColours = fmap f s in
     let sortedTs = sortOn fst $ catMaybes maybeDistancesAndColours in
 -- TODO(Kasper): factor out
@@ -58,5 +57,5 @@ occludes env ray vectorTowardsLight =
        [] -> False
        ((t,_):xs) -> t > 0 && t < len vectorTowardsLight
 
-flatWhite::RecDepth -> Material
+flatWhite:: Material
 flatWhite = flat (Colour 1.0 1.0 1.0)
