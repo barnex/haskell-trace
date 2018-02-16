@@ -41,10 +41,13 @@ reflective::Colour -> Material
 reflective reflectivity = \env ray@(Ray _ dir) recDepth dist normal ->
   let pointOnShape = ray `at` dist in
   let dir' = mul (-1.0) dir in -- direction pointing outward from surface
-  let reflectedDir = dir' `sub` (mul (2.0*(normal `dot` dir')) normal) in
+  let reflectedDir = confusingFormula dir' normal in
+  --let reflectedDir = dir' `sub` (mul (2.0*(normal `dot` dir')) normal) in
   let reflectedRay = Ray pointOnShape reflectedDir in
   findColour env reflectedRay (recDepth - 1)
   
+confusingFormula:: Vector -> Vector -> Vector
+confusingFormula dir' normal = dir' `sub` (mul (2.0*(normal `dot` dir')) normal)
   
 occludes::Env -> Ray -> Vector -> Bool
 occludes env ray vectorTowardsLight =

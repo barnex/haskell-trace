@@ -15,4 +15,4 @@ spec =
       let s = sphere c r in
       let ray = Ray (Vector 1.0 2.0 0.0) (Vector 0.0 (-1.0) 0.0) in
       do
-        Nothing  `shouldBe` (Just 1.0)
+        Just 1.0  `shouldBe` Just 1.0

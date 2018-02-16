@@ -1,6 +1,6 @@
 module Vector where
 
-data Vector = Vector Double Double Double deriving Show
+data Vector = Vector Double Double Double deriving (Show, Eq)
 type UnitVector = Vector
 
 dot::Vector -> Vector -> Double

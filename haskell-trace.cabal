@@ -40,7 +40,8 @@ test-suite haskell-trace-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
   main-is:             Spec.hs
-  other-modules:       TypesSpec
+  other-modules:       TypesSpec,
+                       MaterialSpec
   build-depends:       base
                      , hspec
                      , haskell-trace
