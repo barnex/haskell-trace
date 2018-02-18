@@ -2,9 +2,9 @@ module Ray where
 
 import Vector
 
-data Ray = Ray Vector Vector deriving Show
+data Ray = Ray Vector UnitVector deriving Show
 
 at:: Ray -> Double -> Vector
 at (Ray startVector direction) t =
-  vectorSum startVector $ mul t direction
+  vecSum startVector $ vecMul t direction
 

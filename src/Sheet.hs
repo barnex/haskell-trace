@@ -20,10 +20,10 @@ sheet distanceFromOrigin normalVector =
 sheety::Double -> Shape
 sheety height =
   \env ray@(Ray start dir) ->
-    let (Vector _ sy _) = start in
-    let (Vector _ dy _) = dir in
+    let (_,sy,_) = elements start in
+    let (_,dy,_) = elements dir in
     let t = (height - sy) / dy in
     if t > 0 then
-      Just (t, (Vector 0.0 1.0 0.0))
+      Just (t, normalize (vector 0.0 1.0 0.0))
     else
       Nothing

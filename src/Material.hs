@@ -25,7 +25,7 @@ clamp d = max d 0
 diffuse::Colour -> Material
 diffuse colour = \env ray _ dist normal ->
   let pointOnShape = ray `at` dist in
-  let vectorTowardsLight = (light env) `sub` pointOnShape in
+  let vectorTowardsLight = (light env) `vecSub` pointOnShape in
   let normalizedVectorTowardsLight = normalize vectorTowardsLight in
   let rayTowardsLight = Ray pointOnShape normalizedVectorTowardsLight in
   if occludes env rayTowardsLight vectorTowardsLight then
@@ -40,14 +40,14 @@ diffuse colour = \env ray _ dist normal ->
 reflective::Colour -> Material
 reflective reflectivity = \env ray@(Ray _ dir) recDepth dist normal ->
   let pointOnShape = ray `at` dist in
-  let dir' = mul (-1.0) dir in -- direction pointing outward from surface
+  let dir' = vecMul (-1.0) dir in -- direction pointing outward from surface
   let reflectedDir = confusingFormula dir' normal in
   --let reflectedDir = dir' `sub` (mul (2.0*(normal `dot` dir')) normal) in
   let reflectedRay = Ray pointOnShape reflectedDir in
   findColour env reflectedRay (recDepth - 1)
   
-confusingFormula:: Vector -> Vector -> Vector
-confusingFormula dir' normal = dir' `sub` (mul (2.0*(normal `dot` dir')) normal)
+confusingFormula:: Vector -> UnitVector -> UnitVector
+confusingFormula dir' normal = normalize $ dir' `vecSub` (vecMul (2.0*(normal `dot` dir')) normal)
   
 occludes::Env -> Ray -> Vector -> Bool
 occludes env ray vectorTowardsLight =
