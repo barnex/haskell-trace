@@ -17,7 +17,7 @@ paint shape material = \env ray recDepth -> do
   return (dist, colour)
 
 flat::Colour -> Material
-flat colour = \env ray recDepth dist norm -> colour
+flat colour = \_ _ _ _ _ -> colour
 
 clamp::Double -> Double
 clamp d = max d 0
@@ -40,13 +40,13 @@ diffuse colour = \env ray _ dist normal ->
 reflective::Colour -> Material
 reflective reflectivity = \env ray@(Ray _ dir) recDepth dist normal ->
   let pointOnShape = ray `at` dist in
-  let dir' = vecMul (-1.0) dir in -- direction pointing outward from surface
+  let dir' = normalize $ vecMul (-1.0) dir in -- direction pointing outward from surface
   let reflectedDir = confusingFormula dir' normal in
   --let reflectedDir = dir' `sub` (mul (2.0*(normal `dot` dir')) normal) in
-  let reflectedRay = Ray pointOnShape reflectedDir in
+  let reflectedRay = offset 1e-9 $ Ray pointOnShape reflectedDir in
   findColour env reflectedRay (recDepth - 1)
   
-confusingFormula:: Vector -> UnitVector -> UnitVector
+confusingFormula:: UnitVector -> UnitVector -> UnitVector
 confusingFormula dir' normal = normalize $ dir' `vecSub` (vecMul (2.0*(normal `dot` dir')) normal)
   
 occludes::Env -> Ray -> Vector -> Bool
@@ -58,7 +58,7 @@ occludes env ray vectorTowardsLight =
 -- TODO(Kasper): factor out
      case sortedTs of
        [] -> False
-       ((t,_):xs) -> t > 0 && t < len vectorTowardsLight
+       ((t,_):_) -> t >= 0.0 && t < len vectorTowardsLight
 
 flatWhite:: Material
 flatWhite = flat (Colour 1.0 1.0 1.0)
