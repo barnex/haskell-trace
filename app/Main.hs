@@ -2,8 +2,6 @@
 module Main where
 
 import Codec.Picture
-import Data.List
-import Data.Maybe
 import GHC.Float
 import Material
 import Object
@@ -12,9 +10,6 @@ import Sphere
 import Sheet
 import Types as Types
 import Vector
-import qualified Debug.Trace as Trace
-
-
 
 -- | render determines the color of a pixel.
 render:: Env -> Int -> Int -> PixelRGBF
@@ -32,20 +27,20 @@ render env i j =
 -- TODO: the focal length (2) is still hard-coded.
 rayFrom:: Double -> Double -> Ray
 rayFrom x y = 
-  let start = (Vector x y 0.0)
-      f = Vector 0 0 2
-      dir = normalize $ sub start f
+  let start = vector x y 0.0
+      f = vector 0 0 2
+      dir = normalize $ vecSub start f
   in
   Ray start dir
 
 
 -- | pixelToCoordinate turns a pixel index into a physical coordinate on the camera.
 pixelToCoordinate:: Int -> Int -> Int -> Int -> (Double, Double)
-pixelToCoordinate i j width height  = 
+pixelToCoordinate i j w h  = 
   let i'::Double = fromIntegral i
       j'::Double = fromIntegral j
-      w'::Double = fromIntegral width
-      h'::Double = fromIntegral height
+      w'::Double = fromIntegral w
+      h'::Double = fromIntegral h
       a = w'/h'
       x =  a*(2.0*(i'+0.5)/w' - 1.0)
       y = -2.0*(j'+0.5)/h' + 1.0
@@ -60,13 +55,12 @@ height = 600
       
 main :: IO ()
 main =
-  let c = Vector 0.0 0.0 (-1.0) in
+  let c = vector 0.0 0.0 (-1.0) in
   let r = 1.0 in
   let o = paint (sphere c r) (diffuse $ Colour 1.0 0.0 0.0) in
-  let c' = Vector 1.0 0.0 (-2.0) in
+  let c' = vector 1.0 0.0 (-2.0) in
   let o' = paint (sphere c' r) (reflective $ Colour 1.0 1.0 1.0) in
   let s = paint (sheety (-1.0)) (diffuse $ Colour 1.0 1.0 1.0) in
-  let ray = Ray (Vector 1.0 2.0 0.0) (Vector 0.0 (-1.0) 0.0) in
-  let env = Env{ scene = [o, o', s] , backgroundColour = Colour 0.1 0.1 0.1, light = Vector 1.0 1.0 0.0 } in
+  let env = Env{ scene = [o, o', s] , backgroundColour = Colour 0.1 0.1 0.1, light = vector 1.0 1.0 0.0 } in
   do
     saveBmpImage "test.bmp" $ ImageRGBF $ generateImage (render env) width height

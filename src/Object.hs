@@ -5,7 +5,6 @@ import Data.List
 import Ray
 import Types
 import Vector
-import qualified Debug.Trace as Trace
 
 type Object = Env -> Ray -> RecDepth -> Maybe (Distance, Colour)
 
@@ -28,7 +27,7 @@ findColour env ray recDepth =
     in
     case sortedTs of
       [] -> backgroundColour env
-      (x:xs) -> snd x
+      (x:_) -> snd x
   else if recDepth < 0 then undefined else Colour 0.0 0.0 0.0
     
 
