@@ -17,7 +17,7 @@ render env i j =
   let (x, y) = pixelToCoordinate i j width height
       ray = rayFrom x y
       f = double2Float . srgb
-      Colour r g b = findColour env ray 10 -- 10 = recursion depth. TODO
+      Colour r g b = findColour env ray 10
   in
   PixelRGBF (f r) (f g) (f b)
   
@@ -55,12 +55,12 @@ height = 600
       
 main :: IO ()
 main =
-  let c = vector 0.0 0.0 (-1.0) in
-  let r = 1.0 in
-  let o = paint (sphere c r) (diffuse $ Colour 1.0 0.0 0.0) in
-  let c' = vector 1.0 0.0 (-2.0) in
-  let o' = paint (sphere c' r) (reflective $ Colour 1.0 1.0 1.0) in
-  let s = paint (sheety (-1.0)) (diffuse $ Colour 1.0 1.0 1.0) in
-  let env = Env{ scene = [o, o', s] , backgroundColour = Colour 0.1 0.1 0.1, light = vector 1.0 1.0 0.0 } in
+  let c = vector (-0.5) 0.0 (-1.0)
+      o = paint (sphere c 0.7) (diffuse $ Colour 1.0 0.0 0.0)
+      c' = vector 1.0 0.0 (-2.0)
+      o' = paint (sphere c' 1.0) $ combine (diffuse $ Colour 0.5 0.5 0.5) (reflective $ Colour 1.0 1.0 0.0)
+      s = paint (sheety (-1.0)) (diffuse $ Colour 1.0 1.0 1.0)
+      env = Env{ scene = [o, o',s ] , backgroundColour = Colour 0.1 0.1 0.1, light = vector 1.0 1.0 0.0 }
+  in
   do
     saveBmpImage "test.bmp" $ ImageRGBF $ generateImage (render env) width height

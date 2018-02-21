@@ -17,7 +17,6 @@ data Env = Env {
 --
 -- | findColour determines the color seen by a ray
 findColour :: Env -> Ray -> RecDepth -> Colour
---findColour env ray 0 = Colour 0.0 0.0 0.0
 findColour env ray recDepth = 
   if recDepth > 0 then
     let shapes = scene env
@@ -28,6 +27,6 @@ findColour env ray recDepth =
     case sortedTs of
       [] -> backgroundColour env
       (x:_) -> snd x
-  else if recDepth < 0 then undefined else Colour 0.0 0.0 0.0
+  else if recDepth < 0 then undefined else Colour 0.0 0.5 0.0 -- TODO: what colour should we select here?
     
 

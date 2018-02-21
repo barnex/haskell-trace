@@ -30,8 +30,8 @@ elements v =
 
 dot :: VectorGADT a -> VectorGADT b -> Double
 dot v1 v2 = 
-  let Any (ax, ay, az) = toAny v1 
-      Any (bx, by, bz) = toAny v2
+  let (ax, ay, az) = elements v1 
+      (bx, by, bz) = elements v2
   in    
   ax*bx + ay*by + az*bz
 
@@ -43,21 +43,21 @@ len v = sqrt $ len2 v
 
 vecSum :: VectorGADT a -> VectorGADT b -> VectorGADT AnyLength
 vecSum v1 v2 =
-  let Any (ax, ay, az) = toAny v1 
-      Any (bx, by, bz) = toAny v2
+  let (ax, ay, az) = elements v1 
+      (bx, by, bz) = elements v2
   in 
   Any (ax+bx, ay+by, az+bz)
 
 vecSub :: VectorGADT a -> VectorGADT b -> VectorGADT AnyLength
 vecSub v1 v2 =
-  let Any (ax, ay, az) = toAny v1 
-      Any (bx, by, bz) = toAny v2
+  let (ax, ay, az) = elements v1 
+      (bx, by, bz) = elements v2
   in 
   Any (ax-bx, ay-by, az-bz)
 
 vecMul:: Double -> VectorGADT a -> VectorGADT AnyLength
 vecMul multiplicator v =
-  let Any (x, y, z) = toAny v in 
+  let (x, y, z) = elements v in 
   Any (multiplicator * x, multiplicator * y, multiplicator * z)
 
 normalize::VectorGADT a -> VectorGADT UnitLength
