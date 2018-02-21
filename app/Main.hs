@@ -21,8 +21,6 @@ render env i j =
   in
   PixelRGBF (f r) (f g) (f b)
   
-
-
 -- | rayFrom creates a ray starting from position (x, y) on the camera.
 -- TODO: the focal length (2) is still hard-coded.
 rayFrom:: Double -> Double -> Ray
@@ -56,7 +54,7 @@ height = 600
 main :: IO ()
 main =
   let c = vector (-0.5) 0.0 (-1.0)
-      o = paint (sphere c 0.7) (diffuse $ Colour 1.0 0.0 0.0)
+      o = paint (sphere c 0.7) $ combine (specular 20.0) (diffuse $ Colour 1.0 0.0 0.0)
       c' = vector 1.0 0.0 (-2.0)
       o' = paint (sphere c' 1.0) $ combine (diffuse $ Colour 0.5 0.5 0.5) (reflective $ Colour 1.0 1.0 0.0)
       s = paint (sheety (-1.0)) (diffuse $ Colour 1.0 1.0 1.0)
