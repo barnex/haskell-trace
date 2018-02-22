@@ -53,12 +53,13 @@ height = 600
       
 main :: IO ()
 main =
-  let c = vector (-0.5) 0.0 (-1.0)
+  let c = vector (-0.5) (-0.2) (-1.0)
       o = paint (sphere c 0.7) $ combine (specular 20.0) (diffuse $ Colour 1.0 0.0 0.0)
-      c' = vector 1.0 0.0 (-2.0)
-      o' = paint (sphere c' 1.0) $ combine (diffuse $ Colour 0.5 0.5 0.5) (reflective $ Colour 1.0 1.0 0.0)
-      s = paint (sheety (-1.0)) (diffuse $ Colour 1.0 1.0 1.0)
-      env = Env{ scene = [o, o',s ] , backgroundColour = Colour 0.1 0.1 0.1, light = vector 1.0 1.0 0.0 }
+      c' = vector 1.0 (-0.2) (-2.0)
+      o' = paint (sphere c' 1.0) $ combine (diffuse $ Colour 0.0 1.0 0.0) (reflective $ Colour 0.1 0.1 0.1)
+      ceiling = paint (sheety (1.0) ) (diffuse $ Colour 1.0 1.0 1.0)
+      floor = paint (sheety (-1.0) ) (diffuse $ Colour 1.0 1.0 1.0)   
+      env = Env{ scene = [o, o', ceiling, floor ] , backgroundColour = Colour 0.1 0.1 0.1, light = vector 0 0.999 0.0 }
   in
   do
     saveBmpImage "test.bmp" $ ImageRGBF $ generateImage (render env) width height

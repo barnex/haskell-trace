@@ -22,9 +22,17 @@ flat colour = \_ _ _ _ _ -> colour
 clamp::Double -> Double
 clamp d = max d 0
 
+makeSureNormalPointsOutwards :: Ray -> UnitVector -> UnitVector
+makeSureNormalPointsOutwards (Ray _ dir) normal =
+  if (dir `dot` normal) > 0 then
+    normalize $ vecMul (-1.0) normal
+  else
+    normal
+
 diffuse::Colour -> Material
-diffuse colour = \env ray _ dist normal ->
-  let p = pointOnShape ray dist normal 
+diffuse colour = \env ray _ dist normal' ->
+  let normal = makeSureNormalPointsOutwards ray normal'
+      p = pointOnShape ray dist normal 
       v = vectorTowardsLight (light env) p
       n = normalize v 
       rayTowardsLight = Ray p n 
@@ -38,15 +46,16 @@ diffuse colour = \env ray _ dist normal ->
 
 pointOnShape :: Ray -> Double -> UnitVector -> Vector
 pointOnShape ray dist normal =
-  (ray `at` dist) `vecSum` (vecMul 1e-6 normal)
+  (ray `at` dist) `vecSum` (vecMul 1e-4 normal)
 
 vectorTowardsLight :: Vector -> Vector -> Vector
 vectorTowardsLight light pointOnShape =
   light `vecSub` pointOnShape
 
 specular :: Double -> Material
-specular specularPower = \env ray@(Ray _ dir) _ dist normal ->
-  let reflectedDir = reflected dir normal
+specular specularPower = \env ray@(Ray _ dir) _ dist normal' ->
+  let normal = makeSureNormalPointsOutwards ray normal' 
+      reflectedDir = reflected dir normal
       p = pointOnShape ray dist normal
       v = vectorTowardsLight (light env) p
       n = normalize v 
@@ -56,16 +65,18 @@ specular specularPower = \env ray@(Ray _ dir) _ dist normal ->
   if occludes env rayTowardsLight v then
       Colour 0.0 0.0 0.0
   else
+    -- TODO: add falloff
     clamp specularComponent `scale` (Colour 1.0 1.0 1.0) -- TODO: this should be the colour of the light
 
 -- TODO: Koen: reflectivity type
 reflective::Colour -> Material
-reflective reflectivity = \env ray@(Ray _ dir) recDepth dist normal ->
+reflective reflectivity = \env ray@(Ray _ dir) recDepth dist normal' ->
+  let normal = makeSureNormalPointsOutwards ray normal' in 
   let pointOnShape = ray `at` dist in
  -- let dir' = normalize $ vecMul (1.0) dir in -- TODO: why is this 1.0 and not -1.0 ????
   let reflectedDir = reflected dir normal in
   let reflectedRay = offset 1e-6 $ Ray pointOnShape reflectedDir in
-  findColour env reflectedRay (recDepth - 1)
+  reflectivity `mulColour` (findColour env reflectedRay (recDepth - 1))
 
 reflected:: UnitVector -> UnitVector -> UnitVector
 reflected dir normal = normalize $ dir `vecSub` (vecMul (2.0*(normal `dot` dir)) normal)
@@ -90,4 +101,4 @@ combine m1 m2 =
     let c1 = m1 env ray recDepth dist normal
         c2 = m2 env ray recDepth dist normal
     in
-    blend c1  c2
+    blend c1 c2
