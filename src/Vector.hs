@@ -15,6 +15,10 @@ instance Show (VectorGADT a) where
   show (Any v) = show v
   show (Unit v) = show v
 
+instance Eq (VectorGADT a) where
+  Any v == Any v' = v == v'
+  Unit v == Unit v' = v == v'
+
 vector :: Double -> Double -> Double -> VectorGADT AnyLength
 vector x y z =
   Any (x,y,z)

@@ -8,6 +8,6 @@ spec :: Spec
 spec = 
   describe "weird formula" $ do
     it "is not knocking like a bus" $
-      let dir' = Vector 0.0 1.0 2.0 in
-      let normal = Vector 1.0 1.0 1.0 in
-      confusingFormula dir' normal `shouldBe` Vector 5.0 6.0 7.0
+      let dir' = normalize $ vector 0.0 1.0 2.0 in
+      let normal = normalize $ vector 1.0 1.0 1.0 in
+      reflected dir' normal `shouldBe` Unit (-0.8944271909999159, -0.44721359549995804,-2.2204460492503126e-16)
