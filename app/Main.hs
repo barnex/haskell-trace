@@ -21,12 +21,20 @@ render env i j =
   in
   PixelRGBF (f r) (f g) (f b)
   
+
+-- camera definition
+-- TODO: cleanup
+camz::Double
+camz = 1
+focallen::Double
+focallen = 2.4
+
 -- | rayFrom creates a ray starting from position (x, y) on the camera.
 -- TODO: the focal length (2) is still hard-coded.
 rayFrom:: Double -> Double -> Ray
 rayFrom x y = 
-  let start = vector x y 0.0
-      f = vector 0 0 2
+  let start = vector x y camz
+      f = vector 0 0 (camz + focallen)
       dir = normalize $ vecSub start f
   in
   Ray start dir
@@ -53,13 +61,20 @@ height = 600
       
 main :: IO ()
 main =
-  let c = vector (-0.5) (-0.2) (-1.0)
-      o = paint (sphere c 0.7) $ combine (specular 20.0) (diffuse $ Colour 1.0 0.0 0.0)
-      c' = vector 1.0 (-0.2) (-2.0)
-      o' = paint (sphere c' 1.0) $ combine (diffuse $ Colour 0.0 1.0 0.0) (reflective $ Colour 0.1 0.1 0.1)
-      ceiling = paint (sheety (1.0) ) (diffuse $ Colour 1.0 1.0 1.0)
-      floor = paint (sheety (-1.0) ) (diffuse $ Colour 1.0 1.0 1.0)   
-      env = Env{ scene = [o, o', ceiling, floor ] , backgroundColour = Colour 0.1 0.1 0.1, light = vector 0 0.999 0.0 }
+  let 
+      white = (diffuse $ Colour 0.9 0.9 0.9)
+      red = (diffuse $ Colour 0.9 0.0 0.0)
+      green = (diffuse $ Colour 0.0 0.9 0.0)
+      ceiling = paint (sheety (1.0) ) white
+      floor = paint (sheety (-1.0) ) white
+      back = paint (sheetz (-2.0)) white
+      left = paint (sheetx (-1.0)) red
+      right = paint (sheetx (1.0)) green
+      c = vector (0.4) (-0.6) (0.2)
+      o = paint (sphere c 0.4) $ combine (specular 20.0) white
+      c' = vector (-0.3) (-0.6) (-0.5)
+      o' = paint (sphere c' 0.4) $ combine (diffuse $ Colour 0.1 0.1 0.1) (reflective $ Colour 0.7 0.7 0.7)
+      env = Env{ scene = [o, o', ceiling, floor, back, left, right] , backgroundColour = Colour 0.1 0.1 0.1, light = vector 0 0.9 0.0 }
   in
   do
     saveBmpImage "test.bmp" $ ImageRGBF $ generateImage (render env) width height
