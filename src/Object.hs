@@ -5,13 +5,15 @@ import Data.List
 import Ray
 import Types
 import Vector
+import System.Random
 
 type Object = Env -> Ray -> RecDepth -> Maybe (Distance, Colour)
 
 data Env = Env { 
            scene :: [Object],
            backgroundColour::Colour,
-           light :: Vector
+           light :: Vector,
+           randomGenerator :: StdGen
     }
 
 --

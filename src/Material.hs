@@ -6,7 +6,9 @@ import Object
 import Ray
 import Shape
 import Types
-import Vector
+import Vector as Vector
+import System.Random
+import Debug.Trace
 
 type Material = Env -> Ray -> RecDepth -> Distance -> UnitVector -> Colour
 
@@ -29,20 +31,51 @@ makeSureNormalPointsOutwards (Ray _ dir) normal =
   else
     normal
 
+indirectLight::Env -> UnitVector -> Vector -> (Colour, Env)
+indirectLight env norm position =
+--  let randomGen = randomGenerator env in
+--      (randomX,  = 
+  undefined
+
+generateRandomVector::StdGen -> UnitVector -> UnitVector
+generateRandomVector randomGen normal =
+  let (randomX, randomGen') = randomR (-1.0, 1.0) randomGen in
+  let (randomY, randomGen'') = randomR (-1.0, 1.0)  randomGen' in
+  let (randomZ, randomGen''') = randomR (-1.0, 1.0)  randomGen'' in
+  let vect = Vector.vector randomX randomY randomZ in
+  let squareLen = len2 vect in
+  if squareLen > 1 then
+    generateRandomVector randomGen''' normal
+  else
+    let normalized = normalize vect in
+    if normalized `dot` normal > 0 then
+      normalized
+    else
+      normalize $ (-1.0) `vecMul` normalized 
+
+
 diffuse::Colour -> Material
-diffuse colour = \env ray _ dist normal' ->
+diffuse colour = \env ray recDepth dist normal' ->
   let normal = makeSureNormalPointsOutwards ray normal'
       p = pointOnShape ray dist normal 
+      randDirection = generateRandomVector (randomGenerator env) normal
+-- Kasper extract this in a function, the indirects tuff
+      indirectRay = Ray p randDirection
+      indirectColour = findColour env indirectRay $ recDepth -1 
+      indirectTheta =  normal `dot` randDirection
+      scaledColour = indirectTheta `scale` indirectColour
       v = vectorTowardsLight (light env) p
       n = normalize v 
       rayTowardsLight = Ray p n 
   in
   if occludes env rayTowardsLight v then
-    Colour 0.0 0.0 0.0
+-- @Arne : something with several PIs
+    Colour 0.0 0.0 0.0 `blend` scaledColour
   else
     let fallOff = 1/len2 v in
     let cosTheta = (n `dot` normal) * fallOff in
-    clamp cosTheta `scale` colour
+    let diffuseColour = clamp cosTheta `scale` colour in
+    diffuseColour `blend` scaledColour
 
 pointOnShape :: Ray -> Double -> UnitVector -> Vector
 pointOnShape ray dist normal =
