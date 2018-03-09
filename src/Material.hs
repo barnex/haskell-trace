@@ -8,6 +8,7 @@ import Shape
 import Types
 import Vector as Vector
 import System.Random
+import Control.Monad.Trans.RWS
 
 type Material = Env -> Ray -> RecDepth -> Distance -> UnitVector -> JefDeMonad Colour
 
@@ -39,28 +40,28 @@ indirectLight env norm position =
 --      (randomX,  = 
   undefined
 
-generateRandomVector::StdGen -> UnitVector -> UnitVector
-generateRandomVector randomGen normal =
-  let (randomX, randomGen') = randomR (-1.0, 1.0) randomGen in
-  let (randomY, randomGen'') = randomR (-1.0, 1.0)  randomGen' in
-  let (randomZ, randomGen''') = randomR (-1.0, 1.0)  randomGen'' in
-  let vect = Vector.vector randomX randomY randomZ in
-  let squareLen = len2 vect in
+generateRandomVector:: UnitVector -> JefDeMonad UnitVector
+generateRandomVector normal = do
+  randomX <- state (randomR (-1.0, 1.0))
+  randomY <- state (randomR (-1.0, 1.0))
+  randomZ <- state (randomR (-1.0, 1.0))
+  let vect = Vector.vector randomX randomY randomZ
+  let squareLen = len2 vect
   if squareLen > 1 then
-    generateRandomVector randomGen''' normal
+    generateRandomVector normal
   else
     let normalized = normalize vect in
     if normalized `dot` normal > 0 then
-      normalized
+      return normalized
     else
-      normalize $ (-1.0) `vecMul` normalized 
+      return $ normalize $ (-1.0) `vecMul` normalized 
 
 
 diffuse::Colour -> Material
 diffuse colour = \env ray recDepth dist normal' -> do
   let normal = makeSureNormalPointsOutwards ray normal'
   let p = pointOnShape ray dist normal 
-  let randDirection = generateRandomVector (undefined env) normal
+  randDirection <- generateRandomVector normal
 -- Kasper extract this in a function, the indirects tuff
   let indirectRay = Ray p randDirection
   indirectColour <- findColour env indirectRay $ recDepth -1 
