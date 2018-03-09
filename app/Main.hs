@@ -11,16 +11,17 @@ import Sheet
 import Types as Types
 import Vector
 import System.Random
+import Control.Monad.Trans.RWS
+
 
 -- | render determines the color of a pixel.
-render:: Env -> Int -> Int -> PixelRGBF
-render env i j = 
+render:: Env -> Int -> Int -> JefDeMonad PixelRGBF
+render env i j = do
   let (x, y) = pixelToCoordinate i j width height
-      ray = rayFrom x y
-      f = double2Float . srgb
-      Colour r g b = findColour env ray 10
-  in
-  PixelRGBF (f r) (f g) (f b)
+  let ray = rayFrom x y
+  let f = double2Float . srgb
+  Colour r g b <- findColour env ray 10
+  return $ PixelRGBF (f r) (f g) (f b)
   
 
 -- camera definition
@@ -76,7 +77,7 @@ main = do
     let o = paint (sphere c 0.4) $ combine (specular 20.0) white 
     let c' = vector (-0.3) (-0.6) (-0.5)
     let o' = paint (sphere c' 0.4) $ combine (diffuse $ Colour 0.1 0.1 0.1) (reflective $ Colour 0.7 0.7 0.7)
-    let env = Env{ scene = [o, o', ceiling, floor, back, left, right] , backgroundColour = Colour 0.1 0.1 0.1, light = vector 0 0.9 0.0, randomGenerator = randomGenerator }
+    let env = Env{ scene = [o, o', ceiling, floor, back, left, right] , backgroundColour = Colour 0.1 0.1 0.1, light = vector 0 0.9 0.0 }
 
-
-    saveBmpImage "test.bmp" $ ImageRGBF $ generateImage (render env) width height
+    (image, _, _) <- runRWST (withImage width height (render env)) env randomGenerator
+    saveBmpImage "test.bmp" $ ImageRGBF image
