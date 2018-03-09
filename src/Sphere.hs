@@ -11,8 +11,7 @@ type Radius = Double
 
 sphere::Center -> Radius -> Shape
 sphere center r =
--- type Shape = Env -> Ray -> Maybe (Distance, UnitVector)
-  \env ray@(Ray start dir) -> 
+  \ray@(Ray start dir) -> 
     let v = vecSub start center
         t = dot v dir 
         discr = (t*t) - len2 v +  (r*r)

@@ -15,12 +15,12 @@ import Control.Monad.Trans.RWS
 
 
 -- | render determines the color of a pixel.
-render:: Env -> Int -> Int -> JefDeMonad PixelRGBF
-render env i j = do
+render:: Int -> Int -> JefDeMonad PixelRGBF
+render i j = do
   let (x, y) = pixelToCoordinate i j width height
   let ray = rayFrom x y
   let f = double2Float . srgb
-  Colour r g b <- findColour env ray 10
+  Colour r g b <- findColour ray 10
   return $ PixelRGBF (f r) (f g) (f b)
   
 
@@ -79,5 +79,5 @@ main = do
     let o' = paint (sphere c' 0.4) $ combine (diffuse $ Colour 0.1 0.1 0.1) (reflective $ Colour 0.7 0.7 0.7)
     let env = Env{ scene = [o, o', ceiling, floor, back, left, right] , backgroundColour = Colour 0.1 0.1 0.1, light = vector 0 0.9 0.0 }
 
-    (image, _, _) <- runRWST (withImage width height (render env)) env randomGenerator
+    (image, _, _) <- runRWST (withImage width height render) env randomGenerator
     saveBmpImage "test.bmp" $ ImageRGBF image

@@ -6,7 +6,7 @@ import Vector
 
 sheet::Double -> UnitVector -> Shape
 sheet distanceFromOrigin normalVector =
-  \env ray@(Ray start dir) ->
+  \(Ray start dir) ->
     let rs = start `dot` normalVector in
     let rd = dir `dot` normalVector in
     let dist = (distanceFromOrigin - rs) / rd in
@@ -19,7 +19,7 @@ sheet distanceFromOrigin normalVector =
 -- | sheety constructs a horizontal sheet
 sheety::Double -> Shape
 sheety height =
-  \env ray@(Ray start dir) ->
+  \(Ray start dir) ->
     let (_,sy,_) = elements start in
     let (_,dy,_) = elements dir in
     let t = (height - sy) / dy in
@@ -31,7 +31,7 @@ sheety height =
 -- | sheetz constructs a sheet along z
 sheetz::Double -> Shape
 sheetz height =
-  \env ray@(Ray start dir) ->
+  \(Ray start dir) ->
     let (_,_,s) = elements start in
     let (_,_,d) = elements dir in
     let t = (height - s) / d in
@@ -42,7 +42,7 @@ sheetz height =
 
 sheetx::Double -> Shape
 sheetx height =
-  \env ray@(Ray start dir) ->
+  \(Ray start dir) ->
     let (s,_,_) = elements start in
     let (d,_,_) = elements dir in
     let t = (height - s) / d in

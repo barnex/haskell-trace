@@ -10,7 +10,7 @@ import Control.Monad.Trans.RWS
 
 type JefDeMonad = RWST Env () StdGen IO
 
-type Object = Env -> Ray -> RecDepth -> RWST Env () StdGen IO (Maybe (Distance, Colour))
+type Object = Ray -> RecDepth -> RWST Env () StdGen IO (Maybe (Distance, Colour))
 
 data Env = Env { 
            scene :: [Object],
@@ -20,16 +20,16 @@ data Env = Env {
 
 --
 -- | findColour determines the color seen by a ray
-findColour :: Env -> Ray -> RecDepth -> JefDeMonad Colour
-findColour env ray recDepth =
+findColour :: Ray -> RecDepth -> JefDeMonad Colour
+findColour ray recDepth =
   if recDepth > 0 then 
     do
-      let shapes = scene env
-      let f shape = shape env ray recDepth
+      shapes <- reader scene
+      let f shape = shape ray recDepth
       maybeDistancesAndColours <- sequence $ f <$> shapes
       let sortedTs = sortOn fst $ catMaybes maybeDistancesAndColours
       case sortedTs of
-        [] -> return $ backgroundColour env
+        [] -> reader backgroundColour
         (x:_) -> return $ snd x
   else
      if recDepth < 0 then
